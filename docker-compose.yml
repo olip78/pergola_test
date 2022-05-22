@@ -1,0 +1,28 @@
+version: '3'
+services:
+  flask-todo-web:
+    build: .
+    environment:
+      SQLALCHEMY_HOST: flask-todo-db
+      SQLALCHEMY_PORT: "5432"
+      SQLALCHEMY_DB: flask-demo
+      SQLALCHEMY_USER: flask-demo
+      SQLALCHEMY_PASSWORD: flask-demo
+    ports:
+    - "5050:5050"
+    depends_on:
+    - flask-todo-db
+
+  flask-todo-db:
+    image: postgres:14.2
+    environment:
+      POSTGRES_USER: flask-demo
+      POSTGRES_PASSWORD: flask-demo
+      POSTGRES_DB: flask-demo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U flask-demo"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+    ports:
+    - "5432:5432"

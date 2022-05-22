@@ -1,0 +1,38 @@
+version: v1
+
+components:
+- name: todo-app
+  docker:
+    file: Dockerfile
+  ports:
+  - 5050
+  ingresses:
+  - host: app
+  env:
+  - name: SQLALCHEMY_HOST
+    component-ref: todo-db
+  - name: SQLALCHEMY_PORT
+    value: "5432"
+  - name: SQLALCHEMY_DB
+    value: flask-demo
+  - name: SQLALCHEMY_USER
+    config-ref: DB_USER
+  - name: SQLALCHEMY_PASSWORD
+    config-ref: DB_PASS
+
+- name: todo-db
+  docker:
+    image: postgres:14.2
+  env:
+  - name: POSTGRES_DB
+    value: flask-demo
+  - name: POSTGRES_USER
+    config-ref: DB_USER
+  - name: POSTGRES_PASSWORD
+    config-ref: DB_PASS
+  storage:
+  - name: pgdata
+    path: /var/lib/postgresql/data
+    size: 1Gi
+  ports:
+  - 5432
